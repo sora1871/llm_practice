@@ -1,79 +1,55 @@
-# 🚀 Colab → GitHub 運用テンプレ
+# llm_practice
 
-## 🔧 初期セットアップ（毎回）
+このリポジトリは、Hugging Face 学習用の notebook と小さな実験コードを管理するためのものです。
 
-```bash
-# リポジトリを取得
-!git clone https://github.com/sora1871/llm.git
-%cd llm
+現在の運用は、Google Colab で作成・実行した `.ipynb` をローカルに持ってきて、このリポジトリに配置し、ローカルから GitHub に push する形です。
 
-# Gitのユーザー情報設定
-!git config --global user.name "sora1871"
-!git config --global user.email "<YOUR_EMAIL>"  ← 公開しない
+## 基本フロー
 
-#リポジトリ接続
-!git remote add origin https://github.com/sora1871/llm.git
-```
+1. Google Colab で notebook を作業する
+2. `.ipynb` をローカルにダウンロードする
+3. このリポジトリの適切な場所に notebook を置く
+4. `python3 fix_notebooks.py` を実行する
+5. `git status` で変更を確認する
+6. `git add` / `git commit` / `git push` を行う
 
----
+## notebook を push する前の手順
 
-## ✏️ 作業後のアップロード手順
+`.ipynb` を更新したときは、commit 前に次を実行してください。
 
 ```bash
-# 変更確認
-!git status
-
-# 変更を追加
-!git add .
-
-# コミット
-!git commit -m "update"
-
-# GitHubへ送信
-!git push origin main
+python3 fix_notebooks.py
+git status
 ```
 
----
-
-## 🔐 認証（必要なとき）
-
-* Username: `sora1871`
-* Password: `<personal_token>` ← 絶対に公開しない
-
----
-
-## 🔁 最新を取得（必要なとき）
+その後、問題なければ通常どおり commit / push します。
 
 ```bash
-!git pull origin main
+git add .
+git commit -m "update notebooks"
+git push origin main
 ```
 
----
+## なぜ `fix_notebooks.py` が必要か
 
-## ⚠️ 注意
+Google Colab や Jupyter で notebook を実行すると、進捗バーや widget 情報が `.ipynb` に保存されることがあります。
 
-* Colabは毎回環境がリセットされる
-* 認証（PAT）は毎回求められることがある
-* PATはコードやREADMEに書かないこと
+特に Hugging Face 系の notebook では、モデルやデータセットのダウンロード進捗が widget 出力として残ることがあります。これが入ったまま GitHub に push されると、GitHub の Preview で `Invalid Notebook` になることがあります。
 
----
+`fix_notebooks.py` は、GitHub Preview を壊しやすい次の情報を notebook から除去します。
 
-## 🧠 メモ
+- `metadata.widgets`
+- `application/vnd.jupyter.widget-view+json` を含む出力
 
-* `git add` → 変更を選ぶ
-* `git commit` → ローカル保存
-* `git push` → GitHubにアップロード
+## push 前の確認ポイント
 
----
+- `.ipynb` を更新したなら `python3 fix_notebooks.py` を実行したか
+- `git status` に `*:Zone.Identifier` が出ていないか
+- 不自然な `.ipynb` ディレクトリ構造になっていないか
+- 必要なら GitHub 上で notebook Preview を開いて表示を確認する
 
-## 🔒 置き換える箇所
-* `<personal_token>` → 認証用トークン(非公開)
-* `<YOUR_EMAIL>` → メール（非公開）
+## 補足
 
----
-
-## ⚡ ワンライナー（慣れたら）
-
-```bash
-!git add . && git commit -m "update" && git push origin main
-```
+- `*:Zone.Identifier` は Windows 由来の不要ファイルです。このリポジトリでは commit しません
+- Colab で動いても、GitHub Preview では widget 情報が原因で表示に失敗することがあります
+- notebook 本体が壊れていなくても、付加情報だけで Preview が失敗することがあります
