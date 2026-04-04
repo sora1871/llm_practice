@@ -1,5 +1,65 @@
 # llm_practice
 
+English version is first. Japanese version is below.
+
+## English
+
+This repository is used to manage Hugging Face study notebooks and small related experiments.
+
+The main workflow is:
+
+1. Work on a notebook in Google Colab
+2. Download the `.ipynb` file locally
+3. Place it in the appropriate folder in this repository
+4. Run `python3 fix_notebooks.py`
+5. Review changes with `git status`
+6. Commit and push to GitHub
+
+## Before Pushing Notebooks
+
+If you updated any `.ipynb` files, run:
+
+```bash
+python3 fix_notebooks.py
+git status
+```
+
+Then commit and push as usual:
+
+```bash
+git add .
+git commit -m "update notebooks"
+git push origin main
+```
+
+## Why `fix_notebooks.py` Is Required
+
+Google Colab and Jupyter sometimes save widget state and progress-bar outputs inside notebook files.
+
+In Hugging Face notebooks, model downloads and dataset downloads often leave widget-related outputs behind. If those outputs stay in the notebook, GitHub may fail to render the notebook preview and show `Invalid Notebook`.
+
+`fix_notebooks.py` removes the most common sources of that problem:
+
+- `metadata.widgets`
+- outputs containing `application/vnd.jupyter.widget-view+json`
+
+## Pre-Push Checklist
+
+- If you changed `.ipynb` files, run `python3 fix_notebooks.py`
+- Confirm `git status` does not include `*:Zone.Identifier`
+- Confirm the notebook file structure is reasonable
+- If needed, verify notebook preview rendering on GitHub
+
+## Notes
+
+- `*:Zone.Identifier` files are Windows metadata files and should never be committed
+- A notebook can work in Colab and still fail in GitHub Preview
+- In many cases, the notebook itself is fine and only the extra widget metadata causes the preview failure
+
+---
+
+## 日本語
+
 このリポジトリは、Hugging Face 学習用の notebook と小さな実験コードを管理するためのものです。
 
 現在の運用は、Google Colab で作成・実行した `.ipynb` をローカルに持ってきて、このリポジトリに配置し、ローカルから GitHub に push する形です。
